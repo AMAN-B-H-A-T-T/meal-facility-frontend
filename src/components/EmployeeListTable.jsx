@@ -1,7 +1,6 @@
 import React,{useState} from 'react'
 
-function EmployeeListTable() {
-
+function EmployeeListTable({Employees}) {  
   return (
     <>
     <table className="w-full text-sm rtl:text-right text-gray-500 dark:text-gray-400 text-center">            
@@ -18,27 +17,19 @@ function EmployeeListTable() {
                 </th>                
               </tr>
             </thead>
-            <tbody className="overflow-y-scroll">
-              <tr className="odd:bg-white even:bg-gray-50 border-b text-black">
+            <tbody className="overflow-y-scroll">              
+              {Employees.map((item,index) => (
+                <tr className="odd:bg-white even:bg-gray-50 border-b text-black" key={index}>
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                 >
-                  EMP_100
+                  {item._id}
                 </th>
-                <td className="px-6 py-4">Shravant Parmar</td>
-                <td className="px-6 py-4">Network Administration</td>
+                <td className="px-6 py-4">{item.Fname +' '+ item.Lname}</td>
+                <td className="px-6 py-4">{item.department.department_name}</td>
               </tr>
-              <tr className="odd:bg-white even:bg-gray-50 border-b text-black">
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                >
-                  EMP_101
-                </th>
-                <td className="px-6 py-4">Manav Shah</td>
-                <td className="px-6 py-4">IT and Security</td>
-              </tr>
+              ))}
             </tbody>
           </table>
     </>

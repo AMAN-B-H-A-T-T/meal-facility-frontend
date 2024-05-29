@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { base_url } from "../statics/exports";
 import { useForm } from "react-hook-form"
+import Swal from "sweetalert2";
 
-function AddUserForm({ AddUserSidebarForm, showAddUserForm }) {
+function AddUserForm({ AddUserSidebarForm, showAddUserForm, setEmployees, setNonEmployees }) {
   const [isEmployee, setIsEmployee] = useState(false);
   const [departments,setDepartments] = useState([])  
+  const [accessToken,setAccessToken] = useState(null)
+  useEffect(() => {
+    setAccessToken(localStorage.getItem('access'))
+  },[])
   const {
     register,
     handleSubmit,
@@ -14,12 +19,58 @@ function AddUserForm({ AddUserSidebarForm, showAddUserForm }) {
   } = useForm()
 
   const handleCreateUser = async (data) => {
-      
+    console.log(data);
+    axios.post(`${base_url}/api/manage/create_user`, {
+      Fname:data.Fname,
+      Lname:data.Lname,
+      email:data.email,
+      ph_no:data.ph_no,
+      department:data.department,
+      is_employee:isEmployee,
+      is_superAdmin:false
+    },{
+      'ngrok-skip-browser-warning':true,
+      "Authorization" : `Bearer ${accessToken}`
+    })
+    .then(function (response) {      
+      let timerInterval;
+      Swal.fire({
+        title: "Employee is added successfully!!",        
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+          const timer = Swal.getPopup().querySelector("b");
+          timerInterval = setInterval(() => {
+            timer.textContent = `${Swal.getTimerLeft()}`;
+          }, 100);
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        }
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
+        if(response.data.data.is_employee == false){
+          setNonEmployees(prevArr => [...prevArr,response.data.data])
+        }else{
+          setEmployees(prevArr => [...prevArr,response.data.data])
+        }
+    })
+    .catch(function (error) {      
+      if(error.response.data.message){
+        alert(error.response.data.message);  
+      }else{
+        alert(error.response.data.error);
+      }
+    });
   }
 
   useEffect(() => {
-    if(isEmployee){
-      const accessToken = localStorage.getItem('access')
+    if(isEmployee){      
       axios.get(`${base_url}/api/manage/get_department`, { headers: {'ngrok-skip-browser-warning':true,"Authorization" : `Bearer ${accessToken}`} })
         .then(function (response) {      
           setDepartments(response.data.data)

@@ -85,7 +85,7 @@ function Navbar({selectedScreen,onSelectScreen}) {
             </div>
             <div className="hidden lg:ml-6 lg:flex items-center">
               <div className="flex space-x-4">
-                <div className="relative">
+                {/* <div className="relative">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width={20}
@@ -108,7 +108,7 @@ function Navbar({selectedScreen,onSelectScreen}) {
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M9.283 4.002H7.971L6.072 5.385v1.271l1.834-1.318h.065V12h1.312z" />
                     </svg>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex items-center relative">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +134,7 @@ function Navbar({selectedScreen,onSelectScreen}) {
                       aria-labelledby="dropdownDefaultButton"
                     >
                       <li>
-                        <button className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => {Logout()}}>Logout</button>
+                        <button className="block px-4 py-2 w-full  text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => {Logout()}}>Logout</button>
                       </li>
                       <li>
                         <Link className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" to='change-password'>Change Password</Link>
