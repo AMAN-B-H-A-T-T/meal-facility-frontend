@@ -14,6 +14,9 @@ function EmployeeListTable({Employees}) {
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Department
+                </th>          
+                <th scope="col" className="px-6 py-3">
+                  Action
                 </th>                
               </tr>
             </thead>
@@ -28,6 +31,10 @@ function EmployeeListTable({Employees}) {
                 </th>
                 <td className="px-6 py-4">{item.Fname +' '+ item.Lname}</td>
                 <td className="px-6 py-4">{item.department.department_name}</td>
+                <td className='px-6 py-4'>
+                <button className="rounded-xl border border-red-600 px-6 py-3 mx-2 text-center text-black hover:bg-red-600 hover:text-white">Delete</button>
+                <button className="rounded-xl border border-amber-600 px-6 py-3 mx-2 text-center text-black hover:bg-amber-600 hover:text-white">Update</button>
+                </td>
               </tr>
               ))}
             </tbody>

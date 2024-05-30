@@ -30,7 +30,7 @@ function Users() {
       <div className="sm:mx-14 flex items-center justify-center bg-slate-200 rounded-xl ">
         <div
           className={`w-1/2 text-center cursor-pointer rounded-xl  p-3 font-semibold border ${
-            selectedCategory == "employees" ? " bg-black text-white" : ""
+            selectedCategory == "employees" ? " border-4 border-blue-500" : ""
           }`}
           onClick={() => setSelectedCategory("employees")}
         >
@@ -38,7 +38,7 @@ function Users() {
         </div>
         <div
           className={`w-1/2 text-center cursor-pointer p-3 rounded-xl font-semibold border ${
-            selectedCategory == "non-employees" ? " bg-black text-white" : ""
+            selectedCategory == "non-employees" ? "border-4 border-blue-500" : ""
           }`}
           onClick={() => setSelectedCategory("non-employees")}
         >

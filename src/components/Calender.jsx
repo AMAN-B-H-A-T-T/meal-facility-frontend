@@ -7,7 +7,7 @@ import "react-calendar/dist/Calendar.css";
 function Calender() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [countings, setCountings] = useState({});
-  const [updateCounts,setUpdateCounts] = useState(0)
+  const [updateCounts, setUpdateCounts] = useState(0);
   useEffect(() => {
     let config = {
       params: {
@@ -27,7 +27,7 @@ function Calender() {
       .catch((error) => {
         alert(error.response.data.error);
       });
-  }, [selectedDate,updateCounts]);
+  }, [selectedDate, updateCounts]);
 
   const disable_delete = async (date) => {
     let reason = prompt("Enter your reason to disable this date");
@@ -42,14 +42,16 @@ function Calender() {
           date: date.toDateString(),
           reason: reason,
         },
-        {headers:{
-          "ngrok-skip-browser-warning": true,
-          Authorization: `Bearer ${localStorage.getItem("access")}`,
-        }}
+        {
+          headers: {
+            "ngrok-skip-browser-warning": true,
+            Authorization: `Bearer ${localStorage.getItem("access")}`,
+          },
+        }
       )
-      .then((res) => {        
+      .then((res) => {
         alert("The date has been disbaled!!");
-        setUpdateCounts(updateCounts + 1)
+        setUpdateCounts(updateCounts + 1);
       })
       .catch((error) => {
         console.log(error);
