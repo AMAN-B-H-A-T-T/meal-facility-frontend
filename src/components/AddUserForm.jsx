@@ -19,7 +19,6 @@ function AddUserForm({ AddUserSidebarForm, showAddUserForm, setEmployees, setNon
   } = useForm()
 
   const handleCreateUser = async (data) => {
-    console.log(data);
     axios.post(`${base_url}/api/manage/create_user`, {
       Fname:data.Fname,
       Lname:data.Lname,

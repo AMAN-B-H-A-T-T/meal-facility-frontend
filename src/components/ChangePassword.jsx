@@ -1,10 +1,40 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { base_url } from "../statics/exports";
 
 function ChangePassword() {
   const [isPassword, setIsPassword] = useState(true);
   const [isConfirmPassword, setIsConfirmPassword] = useState(true);
+  let { userId } = useParams();  
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm()
+
+  const handleChangePassword = async (data) => {    
+    if(data.new_password !== data.confirm_new_password){
+      alert("The passwords do not match!!")
+      return;
+    }
+    data.customerId = userId
+    delete data.confirm_new_password
+    axios.post(`${base_url}/api/manage/set_password`,data,{ headers: {
+      "ngrok-skip-browser-warning": true,
+      Authorization: `Bearer ${localStorage.getItem("access")}`,
+    }}).then(res => {
+      alert("Password updated successfully")
+    }).catch(error => {
+      console.log(error);
+    })
+
+  }
   return (
     <div
       className="h-screen w-full"
@@ -27,13 +57,14 @@ function ChangePassword() {
               <h1 className="text-3xl font-semibold text-gray-900">Change Password</h1>              
             </div>
             <div className="mt-5">
-              <form action="">
+              <form onSubmit={handleSubmit(handleChangePassword)}>
               <div className="relative mt-6">
                   <input
                     type={isPassword ? "password" : "text"}
                     name="password"
                     id="password"
-                    placeholder="Password"
+                    placeholder="New Password"
+                    {...register("new_password")}
                     className="peer mt-1 w-full bg-transparent border-b-2 border-black px-0 py-1 placeholder:text-transparent focus:border-gray-500 focus:outline-none"
                   />
 
@@ -80,7 +111,7 @@ function ChangePassword() {
                     htmlFor="password"
                     className="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 transform text-sm text-gray-800 opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800"
                   >
-                    Password
+                    New Password
                   </label>
                 </div>
                 <div className="relative mt-6">
@@ -89,6 +120,7 @@ function ChangePassword() {
                     name="password"
                     id="password"
                     placeholder="Password"
+                    {...register("confirm_new_password")}
                     className="peer mt-1 w-full bg-transparent border-b-2 border-black px-0 py-1 placeholder:text-transparent focus:border-gray-500 focus:outline-none"
                   />
 
@@ -135,7 +167,7 @@ function ChangePassword() {
                     htmlFor="password"
                     className="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 transform text-sm text-gray-800 opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800"
                   >
-                    Confirm Password
+                    Confirm New Password
                   </label>
                 </div>
                 <div className="my-6">

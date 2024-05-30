@@ -1,7 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form"
+import axios from "axios";
+import { base_url } from "../statics/exports";
 
 function ForgotPassword() {  
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm()
+
+  const handleForgotPassword = async (data) => {
+    axios.post(`${base_url}/api/manage/forgot_email`,data,{ headers: {
+      "ngrok-skip-browser-warning": true,
+      Authorization: `Bearer ${localStorage.getItem("access")}`,
+    }}).then(res => {
+      alert("Please check your email!!")
+    }).catch(error => {
+      console.log(error);
+    })
+  }
   return (
     <div
       className="h-screen w-full"
@@ -27,7 +47,7 @@ function ForgotPassword() {
               </p>
             </div>
             <div className="mt-5">
-              <form action="">
+            <form onSubmit={handleSubmit(handleForgotPassword)}>
                 <div className="relative mt-6bg-opacity-50">
                   <input
                     type="email"
@@ -36,6 +56,7 @@ function ForgotPassword() {
                     placeholder="Email Address"
                     className="peer mt-1 w-full bg-transparent border-b-2 border-black px-0 py-1 placeholder:text-transparent focus:border-gray-500 focus:outline-none"
                     autoComplete="NA"
+                    {...register("email")}
                   />
                   <label
                     htmlFor="email"

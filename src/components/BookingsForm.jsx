@@ -3,12 +3,26 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { base_url } from "../statics/exports";
 
-function BookingsForm({ sidebar, setSidebar }) {
+function BookingsForm({ sidebar, setSidebar,SetBookingsEmployees,setFilteredBookingsEmployees,SetBookingsNonEmployees,setFilteredBookingsNonEmployees }) {
   const [Employees, setEmployees] = useState([]);
+  const [FilteredEmployees,setFilteredEmployees] = useState(Employees)
   const [NonEmployees, setNonEmployees] = useState([]);
-  const [selectedEmployeeCategory, setSelectedEmployeeCategory] =
-    useState("employee");
-
+  const [FilteredNonEmployees,setFilteredNonEmployees] = useState(NonEmployees)
+  const [selectedEmployeeCategory, setSelectedEmployeeCategory] = useState("employee");
+  
+  const SearchInArray = (query,selectedEmployeeCategory) => {
+      if(selectedEmployeeCategory == 'employee') {
+        const results = Employees.filter(employee =>
+          `${employee.Fname} ${employee.Lname}`.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredEmployees(results)
+      }else{
+        const results = NonEmployees.filter(employee =>
+          `${employee.Fname} ${employee.Lname}`.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredNonEmployees(results)
+      }
+  }
   useEffect(() => {
     axios
       .get(`${base_url}/api/manage/get_employees`, {
@@ -20,8 +34,10 @@ function BookingsForm({ sidebar, setSidebar }) {
       .then(function (response) {
         setEmployees(response.data.data.employee);
         setNonEmployees(response.data.data.non_employee);
+        setFilteredEmployees(response.data.data.employee)
+        setFilteredNonEmployees(response.data.data.non_employee);
       })
-      .catch(function (error) {
+      .catch(function (error) {        
         alert(error.response.data.error);
       });
   }, []);
@@ -32,8 +48,8 @@ function BookingsForm({ sidebar, setSidebar }) {
     formState: { errors },
   } = useForm();
 
-  const addBooking = async (data) => {
-    console.log(data);
+  const addBooking = async (data) => {  
+    if(!Array.isArray(data.customer_list)) data.customer_list = data.customer_list.split()
     if (data.customer_list.length == 0) {
       alert("Please select atleast one customer!!");
       return;
@@ -46,6 +62,15 @@ function BookingsForm({ sidebar, setSidebar }) {
         },
       })
       .then((response) => {
+        response.data.data && response.data.data.map((item,index) => {
+          if(item.customer[0].is_employee == true){
+            SetBookingsEmployees(prevArray => [...prevArray,item])
+            setFilteredBookingsEmployees(prevArray => [...prevArray,item])
+          }else{
+            SetBookingsNonEmployees(prevArray => [...prevArray,item])
+            setFilteredBookingsNonEmployees(prevArray => [...prevArray,item])
+          }          
+        })
         console.log(response);
       })
       .catch((errors) => {
@@ -89,6 +114,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                     type="radio"
                     name="employee-category"
                     value={"employee"}
+                    onChange={null}
                     checked={true}
                     onClick={() => {
                       setSelectedEmployeeCategory("employee");
@@ -104,6 +130,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                     type="radio"
                     name="employee-category"
                     value={"non-employee"}
+                    onChange={null}
                     onClick={() => {
                       setSelectedEmployeeCategory("non-employee");
                     }}
@@ -125,6 +152,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                     type="radio"
                     name="meal-category"
                     value={"lunch"}
+                    onChange={null}
                     checked={true}
                     {...register("meal_category")}
                     className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
@@ -136,6 +164,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                   <input
                     type="radio"
                     name="meal-category"
+                    onChange={null}
                     value={"dinner"}
                     {...register("meal_category")}
                     className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
@@ -150,8 +179,7 @@ function BookingsForm({ sidebar, setSidebar }) {
               <input
                 type="checkbox"
                 {...register("is_weekend")}
-                className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                required={true}
+                className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"                
               ></input>
               <label
                 htmlFor="select"
@@ -194,6 +222,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                   id="simple-search"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
                   placeholder="Search By Name..."
+                  onChange={(e) => {SearchInArray(e.target.value,selectedEmployeeCategory)}}
                   required=""
                 />
               </div>
@@ -217,8 +246,8 @@ function BookingsForm({ sidebar, setSidebar }) {
                   </thead>
                   <tbody>
                     {selectedEmployeeCategory === "employee" &&
-                      Employees &&
-                      Employees.map((item, index) => (
+                    FilteredEmployees &&
+                    FilteredEmployees.map((item, index) => (
                         <tr className="bg-white border-b" key={index}>
                           <th
                             scope="row"
@@ -228,6 +257,7 @@ function BookingsForm({ sidebar, setSidebar }) {
                               type="checkbox"
                               {...register("customer_list")}
                               value={item._id}
+                              onChange={null}
                               className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                             ></input>
                           </th>
@@ -243,8 +273,8 @@ function BookingsForm({ sidebar, setSidebar }) {
                         </tr>
                       ))}
                     {selectedEmployeeCategory === "non-employee" &&
-                      NonEmployees &&
-                      NonEmployees.map((item, index) => (
+                    FilteredNonEmployees &&
+                      FilteredNonEmployees.map((item, index) => (
                         <tr className="bg-white border-b" key={index}>
                           <th
                             scope="row"

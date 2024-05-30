@@ -12,7 +12,7 @@ function App() {
         <Route path="/"  element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
-        <Route path="change-password" element={<ChangePassword />} />
+        <Route path="change-password/:userId" element={<ChangePassword />} />
     </Routes>
   </BrowserRouter>
   )
